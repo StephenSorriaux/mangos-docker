@@ -180,7 +180,10 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			echo >&2 '  You need to specify MANGOS_SERVER_VERSION in order to initialize the database'
 			exit 1
 		fi
-
+		if [ -z "$MANGOS_DB_RELEASE" ]; then
+			echo >&2 '  You need to specify MANGOS_DB_RELEASE in order to initialize the database'
+			exit 1
+		fi
 		if [ "$MANGOS_SERVER_VERSION" -gt 1 ]; then
 			MANGOS_WORLD_DB=mangos
 			MANGOS_CHARACTER_DB=characters
@@ -194,13 +197,24 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
     for f in /database/World/Setup/FullDB/*; do
       echo "$0: running $f"; "${mysql[@]}" -D${MANGOS_WORLD_DB} < "$f";
     done
+		echo "APPLYING UPDATES..."
+		for f in /database/World/Updates/${MANGOS_DB_RELEASE}/*.sql; do
+      echo "$0: running $f"; "${mysql[@]}" -D${MANGOS_WORLD_DB} < "$f";
+    done
     echo "WORLD DATABASE CREATED."
     echo "CHARACTER DATABASE CREATION..."
     "${mysql[@]}"  -D${MANGOS_CHARACTER_DB} < /database/Character/Setup/characterLoadDB.sql
-		"${mysql[@]}"  -D${MANGOS_CHARACTER_DB} < /database/Character/Updates/Rel21/Rel21_03_001_characters_pvpstats.sql
+		echo "APPLYING UPDATES..."
+		for f in /database/Character/Updates/${MANGOS_DB_RELEASE}/*.sql; do
+      echo "$0: running $f"; "${mysql[@]}" -D${MANGOS_CHARACTER_DB} < "$f";
+    done
     echo "CHARACTER DATABASE CREATED."
     echo "REALM DATABASE CREATION..."
-    "${mysql[@]}"  -Drealmd < /database/Realm/Setup/realmdLoadDB.sql
+    "${mysql[@]}" -Drealmd < /database/Realm/Setup/realmdLoadDB.sql
+		echo "APPLYING UPDATES..."
+		for f in /database/Realm/Updates/${MANGOS_DB_RELEASE}/*.sql; do
+      echo "$0: running $f"; "${mysql[@]}" -Drealmd < "$f";
+    done
 		"${mysql[@]}" -Drealmd <<-EOSQL
 			INSERT INTO realmlist (name,realmbuilds) VALUES ('${MANGOS_DATABASE_REALM_NAME}','12340') ;
 		EOSQL
