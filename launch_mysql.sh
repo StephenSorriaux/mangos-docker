@@ -176,15 +176,28 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 
     echo "WORLD DATABASE CREATION..."
+		if [ -z "$MANGOS_SERVER_VERSION" ]; then
+			echo >&2 '  You need to specify MANGOS_SERVER_VERSION in order to initialize the database'
+			exit 1
+		fi
+
+		if [ "$MANGOS_SERVER_VERSION" -gt 1 ]; then
+			MANGOS_WORLD_DB=mangos
+			MANGOS_CHARACTER_DB=characters
+		else
+			MANGOS_WORLD_DB=mangos1
+			MANGOS_CHARACTER_DB=character1
+		fi
+
     "${mysql[@]}" < /database/World/Setup/mangosdCreateDB.sql
-    "${mysql[@]}" -Dmangos1 < /database/World/Setup/mangosdLoadDB.sql
+    "${mysql[@]}" -D${MANGOS_WORLD_DB} < /database/World/Setup/mangosdLoadDB.sql
     for f in /database/World/Setup/FullDB/*; do
-      echo "$0: running $f"; "${mysql[@]}" -Dmangos1 < "$f";
+      echo "$0: running $f"; "${mysql[@]}" -D${MANGOS_WORLD_DB} < "$f";
     done
     echo "WORLD DATABASE CREATED."
     echo "CHARACTER DATABASE CREATION..."
-    "${mysql[@]}"  -Dcharacter1 < /database/Character/Setup/characterLoadDB.sql
-		"${mysql[@]}"  -Dcharacter1 < /database/Character/Updates/Rel21/Rel21_03_001_characters_pvpstats.sql
+    "${mysql[@]}"  -D${MANGOS_CHARACTER_DB} < /database/Character/Setup/characterLoadDB.sql
+		"${mysql[@]}"  -D${MANGOS_CHARACTER_DB} < /database/Character/Updates/Rel21/Rel21_03_001_characters_pvpstats.sql
     echo "CHARACTER DATABASE CREATED."
     echo "REALM DATABASE CREATION..."
     "${mysql[@]}"  -Drealmd < /database/Realm/Setup/realmdLoadDB.sql
