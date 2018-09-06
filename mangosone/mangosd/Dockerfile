@@ -1,9 +1,9 @@
 FROM gcc:4.8.5 as builder
-ARG MANGOS_ONE_SERVER_VERSION=master
+ARG MANGOS_SERVER_VERSION=master
 
 RUN apt-get update -qq && \
     apt-get install openssl libssl-dev cmake -y && \
-    git clone https://github.com/mangosone/server.git -b ${MANGOS_ONE_SERVER_VERSION} --recursive && \
+    git clone https://github.com/mangosone/server.git -b ${MANGOS_SERVER_VERSION} --recursive && \
     cd server && \
     cmake . -DBUILD_REALMD=No -DBUILD_TOOLS=No -DCONF_DIR=conf/ && \
     make -j4 && \
@@ -20,7 +20,7 @@ COPY --from=builder /server/bin .
 RUN apt-get update && \
     apt-get install wget libmysql++-dev libssl-dev -y && \
     useradd -ms /bin/bash mangos && \
-    wget --no-check-certificate https://raw.githubusercontent.com/StephenSorriaux/mangosone-docker/master/launch_mangosd.sh && \
+    wget --no-check-certificate https://raw.githubusercontent.com/StephenSorriaux/mangos-docker/master/launch_mangosd.sh && \
     chmod -R a+x . && \
     cp lib/libace.so /usr/lib && \
     mv conf/mangosd.conf.dist conf/mangosd.conf && \

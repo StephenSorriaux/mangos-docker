@@ -1,8 +1,8 @@
 FROM gcc:4.8.5 as builder
-ARG MANGOS_ONE_SERVER_VERSION=master
+ARG MANGOS_SERVER_VERSION=master
 RUN apt-get update -qq && \
     apt-get install openssl libssl-dev cmake -y && \
-    git clone https://github.com/mangosone/server.git -b ${MANGOS_ONE_SERVER_VERSION} --recursive && \
+    git clone https://github.com/mangosone/server.git -b ${MANGOS_SERVER_VERSION} --recursive && \
     cd server && \
     cmake . -DBUILD_MANGOSD=No -DBUILD_TOOLS=No -DCONF_DIR=conf/ && \
     make -j4 && \
@@ -17,7 +17,7 @@ COPY --from=builder /server/bin/ .
 RUN apt-get update && \
     apt-get install wget libmysql++-dev libssl-dev -y && \
     useradd -ms /bin/bash realm && \
-    wget https://raw.githubusercontent.com/StephenSorriaux/mangosone-docker/master/launch_realmd.sh && \
+    wget https://raw.githubusercontent.com/StephenSorriaux/mangos-docker/master/launch_realmd.sh && \
     chmod -R a+x . && \
     cp lib/libace.so /usr/lib && \
     mv conf/realmd.conf.dist conf/realmd.conf && \
