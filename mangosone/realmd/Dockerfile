@@ -1,4 +1,4 @@
-FROM gcc:4.8.5 as builder
+FROM gcc:7.3.0 as builder
 ARG MANGOS_SERVER_VERSION=master
 RUN apt-get update -qq && \
     apt-get install openssl libssl-dev cmake -y && \
@@ -8,7 +8,7 @@ RUN apt-get update -qq && \
     make -j4 && \
     make install -j4
 
-FROM debian:8
+FROM debian:9
 MAINTAINER Stephen SORRIAUX <stephen.sorriaux@gmail.com>
 EXPOSE 3724
 ENV LOGIN_DATABASE_INFO=127.0.0.1;3306;root;mangos;realmd
@@ -19,7 +19,6 @@ RUN apt-get update && \
     useradd -ms /bin/bash realm && \
     wget https://raw.githubusercontent.com/StephenSorriaux/mangos-docker/master/launch_realmd.sh && \
     chmod -R a+x . && \
-    cp lib/libace.so /usr/lib && \
     mv conf/realmd.conf.dist conf/realmd.conf && \
     sed -i 's/^LoginDatabaseInfo      =.*$/LoginDatabaseInfo      = LOGIN_DATABASE_INFO/' conf/realmd.conf && \
     chown -R realm:realm . && \
