@@ -1,0 +1,232 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mangostwo-mysql
+spec:
+  selector:
+    matchLabels:
+      app: mangostwo-mysql
+  serviceName: mangostwo-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mangostwo-mysql
+    spec:
+      containers:
+      - name: mangostwo-mysql
+        image: ssorriaux/mangostwo-database-mysql:latest
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "mangostwo-secret"
+              key: "MYSQL_ROOT_PASSWORD"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 20
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mangostwo-mysql
+  labels:
+    app: mangostwo-mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  clusterIP: None
+  selector:
+    app: mangostwo-mysql
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mangostwo-secret
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: bWFuZ29z
+  LOGIN_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7cmVhbG1k
+  WORLD_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7bWFuZ29z
+  CHARACTER_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7Y2hhcmFjdGVycw==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mangostwo-server
+  labels:
+    app: mangostwo-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mangostwo-server
+  template:
+    metadata:
+      labels:
+        app: mangostwo-server
+    spec:
+      containers:
+      - name: mangostwo-server
+        image: ssorriaux/mangostwo-server:latest
+        env:
+        - name: LOGIN_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangostwo-secret"
+              key: "LOGIN_DATABASE_INFO"
+        - name: WORLD_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangostwo-secret"
+              key: "WORLD_DATABASE_INFO"
+        - name: CHARACTER_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangostwo-secret"
+              key: "CHARACTER_DATABASE_INFO"
+        ports:
+        - name: "mangos-server"
+          containerPort: 8085
+        volumeMounts:
+        - name: mangos-maps
+          mountPath: /etc/mangos/maps
+        - name: mangos-vmaps
+          mountPath: /etc/mangos/vmaps
+        - name: mangos-mmaps
+          mountPath: /etc/mangos/mmaps
+        - name: mangos-dbc
+          mountPath: /etc/mangos/dbc
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8085
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 8085
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: mangos-maps
+        hostPath:
+          path: /tmp
+      - name: mangos-vmaps
+        hostPath:
+          path: /tmp
+      - name: mangos-mmaps
+        hostPath:
+          path: /tmp
+      - name: mangos-dbc
+        hostPath:
+          path: /tmp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mangostwo-server
+  labels:
+    app: mangostwo-server
+spec:
+  ports:
+  - name: mangos-server
+    port: 8085
+  clusterIP: None
+  selector:
+    app: mangostwo-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mangostwo-realmd
+  labels:
+    app: mangostwo-realmd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mangostwo-realmd
+  template:
+    metadata:
+      labels:
+        app: mangostwo-realmd
+    spec:
+      containers:
+      - name: mangostwo-realmd
+        image: ssorriaux/mangostwo-realmd:latest
+        env:
+        - name: LOGIN_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangostwo-secret"
+              key: "LOGIN_DATABASE_INFO"
+        ports:
+        - name: "mangos-realmd"
+          containerPort: 3724
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        livenessProbe:
+          tcpSocket:
+            port: 3724
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 3724
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mangostwo-realmd
+  labels:
+    app: mangostwo-realmd
+spec:
+  ports:
+  - name: mangos-realmd
+    port: 3724
+  clusterIP: None
+  selector:
+    app: mangostwo-realmd

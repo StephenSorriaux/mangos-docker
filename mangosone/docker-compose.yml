@@ -35,7 +35,7 @@ services:
      environment:
        LOGIN_DATABASE_INFO: db;3306;root;mangos;realmd
        WORLD_DATABASE_INFO: db;3306;root;mangos;mangos1
-       CHARACTER_DATABASE_INFO: db;3306;root;mangos;characters1
+       CHARACTER_DATABASE_INFO: db;3306;root;mangos;character1
 volumes:
     db_data:
     mangos_maps:
