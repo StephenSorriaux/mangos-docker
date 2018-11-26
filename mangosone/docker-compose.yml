@@ -20,6 +20,8 @@ services:
        LOGIN_DATABASE_INFO: db;3306;root;mangos;realmd
 
    server:
+     tty: true
+     stdin_open: true
      depends_on:
        - db
        - realmd
