@@ -84,8 +84,6 @@ Before creating the whole server, you will need to provide the path, from your h
 * dbc
 
 This can be done editing the `kubernetes-deployment.yml` file.
-## Contributing
-Feel free to create any issue or pull-request.
 
 ## How to handle maps on Windows.
 * Place your maps in some directory on Windows, for example
@@ -103,3 +101,6 @@ c:/mangos_maps/dbc
        - c:/mangos_maps/mmaps:/etc/mangos/mmaps
        - c:/mangos_maps/dbc:/etc/mangos/dbc
 ```
+
+## Contributing
+Feel free to create any issue or pull-request.
