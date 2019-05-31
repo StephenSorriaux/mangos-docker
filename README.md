@@ -22,10 +22,12 @@ This is OK if you want to create a little server with not much players. Also, th
 ```bash
 docker run -i -v /path/to/maps:/etc/mangos/maps -v /path/to/vmaps:/etc/mangos/vmaps -v /path/to/mmaps:/etc/mangos/mmaps -v /path/to/dbc:/etc/mangos/dbc -e "LOGIN_DATABASE_INFO=localhost;3306;root;mangos;realmd" -e "WORLD_DATABASE_INFO=localhost;3306;root;mangos;mangos" -e "CHARACTER_DATABASE_INFO=localhost;3306;root;mangos;characters" -p 8085:8085 -d ssorriaux/<version>-server:latest
 ```
-It is possible to configure AH using the `ahbot.conf` file. Add this parameter to the previous command:
+##### Configure ahbot.conf
+It is possible to configure AH using the `ahbot.conf` file. Add this parameter to the world server launch command:
 ```bash
--v /path/to/ahbot.conf:/etc/conf/ahbot.conf
+-v /path/to/ahbot.conf:/mangosconf/ahbot.conf
 ```
+Be aware to use the `/mangosconf/ahbot.conf` file and not the one in `/etc/mangos/`.
 
 #### Launching the database
 ```bash
