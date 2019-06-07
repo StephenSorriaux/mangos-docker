@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "chart.fullname" . }}-realmd-service
+  labels:
+    app: {{ template "chart.name" . }}
+    chart: {{ template "chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.realmd.service.type }}
+  ports:
+    - port: {{ .Values.realmd.service.port }}
+      targetPort: 3724
+      protocol: TCP
+      name: "mangos-realmd"
+  selector:
+    app: {{ template "chart.name" . }}-realmd
+    release: {{ .Release.Name }}
