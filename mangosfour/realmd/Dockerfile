@@ -4,6 +4,7 @@ ARG THREAD_COUNT="-j4"
 ARG CMAKE_VERSION="3.14.5"
 
 RUN apt-get update -qq && \
+    apt-get install openssl libssl-dev -y && \
     wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh && \
     sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr && \
     git clone https://github.com/mangosfour/server.git -b ${MANGOS_SERVER_VERSION} --recursive && \
