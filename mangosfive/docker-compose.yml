@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+   db:
+     image: ssorriaux/mangosfive-database-mysql:latest
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: mangos
+
+   realmd:
+     depends_on:
+       - db
+     image: ssorriaux/mangosfive-realmd:latest
+     ports:
+       - "3724:3724"
+     restart: always
+     environment:
+       LOGIN_DATABASE_INFO: db;3306;root;mangos;realmd
+
+   server:
+     tty: true
+     stdin_open: true
+     depends_on:
+       - db
+       - realmd
+     image: ssorriaux/mangosfive-server:latest
+     volumes:
+       - mangos_maps:/etc/mangos/maps
+       - mangos_vmaps:/etc/mangos/vmaps
+       - mangos_mmaps:/etc/mangos/mmaps
+       - mangos_dbc:/etc/mangos/dbc
+     ports:
+       - "8085:8085"
+     restart: always
+     environment:
+       LOGIN_DATABASE_INFO: db;3306;root;mangos;realmd
+       WORLD_DATABASE_INFO: db;3306;root;mangos;mangos5
+       CHARACTER_DATABASE_INFO: db;3306;root;mangos;characters5
+volumes:
+    db_data:
+    mangos_maps:
+    mangos_vmaps:
+    mangos_mmaps:
+    mangos_dbc:
