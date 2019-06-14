@@ -1,0 +1,232 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mangosfive-mysql
+spec:
+  selector:
+    matchLabels:
+      app: mangosfive-mysql
+  serviceName: mangosfive-mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mangosfive-mysql
+    spec:
+      containers:
+      - name: mangosfive-mysql
+        image: ssorriaux/mangosfive-database-mysql:latest
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "mangosfive-secret"
+              key: "MYSQL_ROOT_PASSWORD"
+        ports:
+        - name: mysql
+          containerPort: 3306
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/mysql
+          subPath: mysql
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 120
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 30
+          periodSeconds: 15
+          timeoutSeconds: 5
+          failureThreshold: 20
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mangosfive-mysql
+  labels:
+    app: mangosfive-mysql
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  clusterIP: None
+  selector:
+    app: mangosfive-mysql
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mangosfive-secret
+type: Opaque
+data:
+  MYSQL_ROOT_PASSWORD: bWFuZ29z
+  LOGIN_DATABASE_INFO: bWFuZ29zZml2ZS1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO3JlYWxtZA==
+  WORLD_DATABASE_INFO: bWFuZ29zZml2ZS1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO21hbmdvczU=
+  CHARACTER_DATABASE_INFO: bWFuZ29zZml2ZS1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO2NoYXJhY3RlcnM1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mangosfive-server
+  labels:
+    app: mangosfive-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mangosfive-server
+  template:
+    metadata:
+      labels:
+        app: mangosfive-server
+    spec:
+      containers:
+      - name: mangosfive-server
+        image: ssorriaux/mangosfive-server:latest
+        env:
+        - name: LOGIN_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangosfive-secret"
+              key: "LOGIN_DATABASE_INFO"
+        - name: WORLD_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangosfive-secret"
+              key: "WORLD_DATABASE_INFO"
+        - name: CHARACTER_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangosfive-secret"
+              key: "CHARACTER_DATABASE_INFO"
+        ports:
+        - name: "mangos-server"
+          containerPort: 8085
+        volumeMounts:
+        - name: mangos-maps
+          mountPath: /etc/mangos/maps
+        - name: mangos-vmaps
+          mountPath: /etc/mangos/vmaps
+        - name: mangos-mmaps
+          mountPath: /etc/mangos/mmaps
+        - name: mangos-dbc
+          mountPath: /etc/mangos/dbc
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        livenessProbe:
+          tcpSocket:
+            port: 8085
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 8085
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+      volumes:
+      - name: mangos-maps
+        hostPath:
+          path: /tmp
+      - name: mangos-vmaps
+        hostPath:
+          path: /tmp
+      - name: mangos-mmaps
+        hostPath:
+          path: /tmp
+      - name: mangos-dbc
+        hostPath:
+          path: /tmp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mangosfive-server
+  labels:
+    app: mangosfive-server
+spec:
+  ports:
+  - name: mangos-server
+    port: 8085
+  clusterIP: None
+  selector:
+    app: mangosfive-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mangosfive-realmd
+  labels:
+    app: mangosfive-realmd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mangosfive-realmd
+  template:
+    metadata:
+      labels:
+        app: mangosfive-realmd
+    spec:
+      containers:
+      - name: mangosfive-realmd
+        image: ssorriaux/mangosfive-realmd:latest
+        env:
+        - name: LOGIN_DATABASE_INFO
+          valueFrom:
+            secretKeyRef:
+              name: "mangosfive-secret"
+              key: "LOGIN_DATABASE_INFO"
+        ports:
+        - name: "mangos-realmd"
+          containerPort: 3724
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        livenessProbe:
+          tcpSocket:
+            port: 3724
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 3724
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mangosfive-realmd
+  labels:
+    app: mangosfive-realmd
+spec:
+  ports:
+  - name: mangos-realmd
+    port: 3724
+  clusterIP: None
+  selector:
+    app: mangosfive-realmd
