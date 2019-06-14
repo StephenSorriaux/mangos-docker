@@ -21,23 +21,23 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-world
-          image: "{{- template "repository.world" . }}:{{ .Values.world.image.tag }}"
+          image: "{{ template "repository.world" . }}:{{ .Values.world.image.tag }}"
           imagePullPolicy: {{ .Values.world.image.pullPolicy }}
           env:
             - name: LOGIN_DATABASE_INFO
               valueFrom:
                 secretKeyRef:
-                  name: "mangoszero-secret"
+                  name: "mangos-secret"
                   key: "LOGIN_DATABASE_INFO"
             - name: WORLD_DATABASE_INFO
               valueFrom:
                 secretKeyRef:
-                  name: "mangoszero-secret"
+                  name: "mangos-secret"
                   key: "WORLD_DATABASE_INFO"
             - name: CHARACTER_DATABASE_INFO
               valueFrom:
                 secretKeyRef:
-                  name: "mangoszero-secret"
+                  name: "mangos-secret"
                   key: "CHARACTER_DATABASE_INFO"
           ports:
             - name: "mangos-world"
@@ -59,16 +59,16 @@ spec:
       volumes:
         - name: mangos-maps
           hostPath:
-            path: /tmp
+            path: {{ .Values.world.maps }}
         - name: mangos-vmaps
           hostPath:
-            path: /tmp
+            path: {{ .Values.world.mmaps }}
         - name: mangos-mmaps
           hostPath:
-            path: /tmp
+            path: {{ .Values.world.vmaps }}
         - name: mangos-dbc
           hostPath:
-            path: /tmp
+            path: {{ .Values.world.dbc }}
       {{- with .Values.world.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

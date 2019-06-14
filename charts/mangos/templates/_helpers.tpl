@@ -34,18 +34,18 @@ Create chart name and version as used by the chart label.
 {{/*
 Create repository name base
 */}}
-{{- define "repository.base" -}}
-{{- if eq .Values.wowVersion 0 -}}
+{{- define "repository.base" }}
+{{- if eq (.Values.wowVersion | int) 0 -}}
 ssorriaux/mangoszero
-{{- else if eq .Values.wowVersion 1 -}}
+{{- else if eq (.Values.wowVersion | int) 1 -}}
 ssorriaux/mangosone
-{{- else if eq .Values.wowVersion 2 -}}
+{{- else if eq (.Values.wowVersion | int) 2 -}}
 ssorriaux/mangostwo
-{{- else if eq .Values.wowVersion 3 -}}
+{{- else if eq (.Values.wowVersion | int) 3 -}}
 ssorriaux/mangosthree
-{{- else if eq .Values.wowVersion 4 -}}
+{{- else if eq (.Values.wowVersion | int) 4 -}}
 ssorriaux/mangosfour
-{{- else if eq .Values.wowVersion 5 -}}
+{{- else if eq (.Values.wowVersion | int) 5 -}}
 ssorriaux/mangosfive
 {{- end -}}
 {{- end -}}
@@ -54,19 +54,19 @@ ssorriaux/mangosfive
 Create repository name for world server
 */}}
 {{- define "repository.world" -}}
-{{- template "repository.base" . | required "wowVersion must be between 0 and 5" }}-server
+{{- template "repository.base" . }}-server
 {{- end -}}
 
 {{/*
 Create repository name for auth server
 */}}
 {{- define "repository.realmd" -}}
-{{- template "repository.base" . | required "wowVersion must be between 0 and 5" }}-realmd
+{{- template "repository.base" . }}-realmd
 {{- end -}}
 
 {{/*
 Create repository name for mysql
 */}}
 {{- define "repository.mysql" -}}
-{{- template "repository.base" . | required "wowVersion must be between 0 and 5" }}-database-mysql
+{{- template "repository.base" . }}-database-mysql
 {{- end -}}

@@ -22,13 +22,13 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-mysql
-          image: "{{- template "repository.mysql" . }}:{{ .Values.mysql.image.tag }}"
+          image: "{{- template "repository.mysql" . -}}:{{ .Values.mysql.image.tag }}"
           imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: "mangoszero-secret"
+                  name: "mangos-secret"
                   key: "MYSQL_ROOT_PASSWORD"
           ports:
             - name: mysql
@@ -51,7 +51,7 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 20
           resources:
-            {{ toYaml .Values.mysql.resources | indent 12 }}
+{{ toYaml .Values.mysql.resources | indent 12 }}
     {{- with .Values.mysql.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

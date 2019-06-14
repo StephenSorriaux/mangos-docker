@@ -11,6 +11,7 @@
 # 5 - Warlords        (Mangos Five)
 wowVersion: 0
 
+# Realm/auth server settings
 realmd:
   replicaCount: 1
 
@@ -33,6 +34,7 @@ realmd:
 
   affinity: {}
 
+# World server settings
 world:
   replicaCount: 1
 
@@ -49,12 +51,19 @@ world:
       cpu: 100m
       memory: 256Mi
 
+  # Host paths for using map files extracted from WoW client
+  maps: /tmp
+  mmaps: /tmp
+  vmaps: /tmp
+  dbc: /tmp
+
   nodeSelector: {}
 
   tolerations: []
 
   affinity: {}
 
+# Mysql server settings
 mysql:
   replicaCount: 1
 
