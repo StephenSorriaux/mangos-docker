@@ -1,7 +1,7 @@
 # mangos-docker
 This repository lists everything needed to build and run Docker images for Mangos project.
 
-## How is organized the repository
+## How the repository is organized
 Each folder is dedicated to a specific version of Mangos, inside you will find everything about this precise version (from Dockerfile to deployment files).
 Each version currently provides 3 Docker images :
 * **mangosd**: this the world server that needs maps to work. This is the server the players will be playing on.
@@ -61,6 +61,13 @@ Create the whole server using:
 kubectl apply -f kubernetes-deployment.yml
 ```
 Passwords are kept inside the `Secret` resource.
+#### Using Helm
+There is a helm chart included in this repository that can be used to provide a more flexible way of deploying to Kubernetes.
+
+To deploy, make any needed edits to the `values.yaml` file and apply using:
+```bash
+helm install
+```
 ## What about the maps?
 You will **not** find any maps (those resources are Blizzard's properties) in these Docker images, you will need to **provide it yourself** using several methods listed below.
 ### Using Docker containers
@@ -86,6 +93,9 @@ Before creating the whole server, you will need to provide the path, from your h
 * dbc
 
 This can be done editing the `kubernetes-deployment.yml` file.
+
+#### Using Helm
+Host paths can be set by editing the `values.yaml` file.
 
 ## How to handle maps on Windows.
 * Place your maps in some directory on Windows, for example

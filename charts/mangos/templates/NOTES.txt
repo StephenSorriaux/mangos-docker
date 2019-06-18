@@ -1,3 +1,6 @@
+Get MySQL Root Password:
+echo -n $(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="data.MYSQL_ROOT_PASSWORD" secret mangos-secret) | base64
+
 1. Get the realmd URL by running these commands:
 {{- if contains "NodePort" .Values.realmd.service.type }}
   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ template "chart.fullname" . }}-realmd)
