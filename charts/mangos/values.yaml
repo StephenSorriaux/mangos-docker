@@ -1,0 +1,91 @@
+# Default values for chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Version of WoW you want to create
+# 0 - Vanilla         (Mangos Zero)
+# 1 - Burning Crusade (Mangos One)
+# 2 - Lich King       (Mangos Two)
+# 3 - Cataclysm       (Mangos Three)
+# 4 - Mists           (Mangos Four)
+# 5 - Warlords        (Mangos Five)
+wowVersion: 0
+
+# Realm/auth server settings
+realmd:
+  replicaCount: 1
+
+  image:
+    tag: stable
+    pullPolicy: IfNotPresent
+
+  service:
+    type: NodePort
+    port: 3724
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# World server settings
+world:
+  replicaCount: 1
+
+  image:
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: NodePort
+    port: 8085
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+
+  # Host paths for using map files extracted from WoW client
+  maps: /tmp
+  mmaps: /tmp
+  vmaps: /tmp
+  dbc: /tmp
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# Mysql server settings
+mysql:
+  replicaCount: 1
+
+  rootPassword: mangos
+
+  storage: 10Gi
+
+  image:
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 3306
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}

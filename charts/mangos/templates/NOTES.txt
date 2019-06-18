@@ -1,0 +1,34 @@
+Get MySQL Root Password:
+echo -n $(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="data.MYSQL_ROOT_PASSWORD" secret mangos-secret) | base64
+
+1. Get the realmd URL by running these commands:
+{{- if contains "NodePort" .Values.realmd.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ template "chart.fullname" . }}-realmd)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.realmd.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get svc -w {{ template "chart.fullname" . }}-realmd'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "chart.fullname" . }}-realmd -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo http://$SERVICE_IP:{{ .Values.realmd.service.port }}
+{{- else if contains "ClusterIP" .Values.realmd.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "chart.name" . }}-realmd,release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:3724 to use your application"
+  kubectl port-forward $POD_NAME 3724:3724
+{{- end }}
+
+2. Get the world URL by running these commands:
+{{- if contains "NodePort" .Values.world.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ template "chart.fullname" . }}-world)
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.world.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch the status of by running 'kubectl get svc -w {{ template "chart.fullname" . }}-world'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ template "chart.fullname" . }}-world -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+  echo http://$SERVICE_IP:{{ .Values.world.service.port }}
+{{- else if contains "ClusterIP" .Values.world.service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ template "chart.name" . }}-world,release={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  echo "Visit http://127.0.0.1:8085 to use your application"
+  kubectl port-forward $POD_NAME 8085:8085
+{{- end }}

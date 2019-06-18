@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "chart.fullname" . }}-mysql-service
+  labels:
+    app: {{ template "chart.name" . }}-mysql
+    chart: {{ template "chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.mysql.service.type }}
+  ports:
+    - port: {{ .Values.mysql.service.port }}
+      targetPort: 3306
+      protocol: TCP
+      name: mysql
+  selector:
+    app: {{ template "chart.name" . }}-mysql
+    release: {{ .Release.Name }}

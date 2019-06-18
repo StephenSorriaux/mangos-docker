@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "chart.fullname" . }}-world
+  labels:
+    app: {{ template "chart.name" . }}-world
+    chart: {{ template "chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.world.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "chart.name" . }}-world
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "chart.name" . }}-world
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-world
+          image: "{{ template "repository.world" . }}:{{ .Values.world.image.tag }}"
+          imagePullPolicy: {{ .Values.world.image.pullPolicy }}
+          env:
+            - name: LOGIN_DATABASE_INFO
+              valueFrom:
+                secretKeyRef:
+                  name: "mangos-secret"
+                  key: "LOGIN_DATABASE_INFO"
+            - name: WORLD_DATABASE_INFO
+              valueFrom:
+                secretKeyRef:
+                  name: "mangos-secret"
+                  key: "WORLD_DATABASE_INFO"
+            - name: CHARACTER_DATABASE_INFO
+              valueFrom:
+                secretKeyRef:
+                  name: "mangos-secret"
+                  key: "CHARACTER_DATABASE_INFO"
+          ports:
+            - name: "mangos-world"
+              containerPort: 8085
+          livenessProbe:
+            tcpSocket:
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 8085
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+{{ toYaml .Values.world.resources | indent 12 }}
+      volumes:
+        - name: mangos-maps
+          hostPath:
+            path: {{ .Values.world.maps }}
+        - name: mangos-vmaps
+          hostPath:
+            path: {{ .Values.world.mmaps }}
+        - name: mangos-mmaps
+          hostPath:
+            path: {{ .Values.world.vmaps }}
+        - name: mangos-dbc
+          hostPath:
+            path: {{ .Values.world.dbc }}
+      {{- with .Values.world.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.world.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.world.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}

@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "chart.fullname" . }}-realmd
+  labels:
+    app: {{ template "chart.name" . }}-realmd
+    chart: {{ template "chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.realmd.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "chart.name" . }}-realmd
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "chart.name" . }}-realmd
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-realmd
+          image: "{{- template "repository.realmd" . }}:{{ .Values.realmd.image.tag }}"
+          imagePullPolicy: {{ .Values.realmd.image.pullPolicy }}
+          env:
+            - name: LOGIN_DATABASE_INFO
+              valueFrom:
+                secretKeyRef:
+                  name: "mangos-secret"
+                  key: "LOGIN_DATABASE_INFO"
+          ports:
+            - name: "mangos-realmd"
+              containerPort: 3724
+          livenessProbe:
+            tcpSocket:
+              port: 3724
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 3724
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+{{ toYaml .Values.realmd.resources | indent 12 }}
+    {{- with .Values.realmd.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.realmd.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.realmd.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

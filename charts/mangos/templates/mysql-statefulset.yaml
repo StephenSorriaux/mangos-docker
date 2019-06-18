@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "chart.fullname" . }}-mysql
+  labels:
+    app: {{ template "chart.name" . }}-mysql
+    chart: {{ template "chart.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.mysql.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "chart.name" . }}-mysql
+      release: {{ .Release.Name }}
+  serviceName: {{ template "chart.fullname" . }}-mysql-service
+  template:
+    metadata:
+      labels:
+        app: {{ template "chart.name" . }}-mysql
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-mysql
+          image: "{{- template "repository.mysql" . -}}:{{ .Values.mysql.image.tag }}"
+          imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "mangos-secret"
+                  key: "MYSQL_ROOT_PASSWORD"
+          ports:
+            - name: mysql
+              containerPort: 3306
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+              subPath: mysql
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 20
+          resources:
+{{ toYaml .Values.mysql.resources | indent 12 }}
+    {{- with .Values.mysql.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.mysql.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.mysql.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.mysql.storage }}
