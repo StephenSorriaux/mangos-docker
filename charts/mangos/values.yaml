@@ -69,6 +69,8 @@ mysql:
 
   rootPassword: mangos
 
+  storage: 10Gi
+
   image:
     tag: latest
     pullPolicy: IfNotPresent
