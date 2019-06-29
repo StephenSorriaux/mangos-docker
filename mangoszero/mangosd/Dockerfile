@@ -9,7 +9,7 @@ RUN apt-get update -qq && \
     sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr && \
     git clone https://github.com/mangoszero/server.git -b ${MANGOS_SERVER_VERSION} --recursive && \
     cd server && \
-    cmake . -DBUILD_REALMD=No -DBUILD_TOOLS=No -DCONF_DIR=conf/ && \
+    cmake . -DBUILD_REALMD=No -DBUILD_TOOLS=No -DCONF_INSTALL_DIR=/server/install/etc && \
     make ${THREAD_COUNT} && \
     make install ${THREAD_COUNT}
 
