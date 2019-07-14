@@ -29,7 +29,7 @@ fi
 
 if [ -f /mangosconf/ahbot.conf ]; then
   echo "/mangosdconf/ahbot.conf is being used"
-  AHCONFIG=-a /mangosconf/ahbot.conf
+  AHCONFIG="-a /mangosconf/ahbot.conf"
 fi
 # populate template with env vars
 sed -i "s/LOGIN_DATABASE_INFO/$LOGIN_DATABASE_INFO/g" $CONFIGS/mangosd.conf
