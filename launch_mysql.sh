@@ -187,9 +187,12 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		if [ "$MANGOS_SERVER_VERSION" -gt 1 ]; then
 			MANGOS_WORLD_DB=mangos
 			MANGOS_CHARACTER_DB=characters
-		else
+		elif [ "$MANGOS_SERVER_VERSION" -eq 1 ]; then
 			MANGOS_WORLD_DB=mangos1
 			MANGOS_CHARACTER_DB=character1
+		else
+			MANGOS_WORLD_DB=mangos0
+			MANGOS_CHARACTER_DB=character0
 		fi
 
     "${mysql[@]}" < /database/World/Setup/mangosdCreateDB.sql
