@@ -13,7 +13,7 @@ RUN apt-get update -qq && \
     make ${THREAD_COUNT} && \
     make install ${THREAD_COUNT}
 
-FROM debian:9
+FROM debian:10
 MAINTAINER Stephen SORRIAUX <stephen.sorriaux@gmail.com>
 EXPOSE 3724
 ENV LOGIN_DATABASE_INFO=127.0.0.1;3306;root;mangos;realmd
@@ -21,7 +21,7 @@ WORKDIR /etc/mangos/
 COPY --from=builder /server/install/bin ./bin
 COPY --from=builder /server/install/etc ./conf
 RUN apt-get update && \
-    apt-get install wget libmysql++-dev libssl-dev -y && \
+    apt-get install wget libmariadb3 libssl-dev -y && \
     useradd -ms /bin/bash realm && \
     wget https://raw.githubusercontent.com/StephenSorriaux/mangos-docker/master/launch_realmd.sh && \
     chmod -R a+x . && \
