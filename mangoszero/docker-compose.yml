@@ -12,9 +12,9 @@ services:
    realmd:
      depends_on:
        - db
-     image: ssorriaux/mangoszero-realmd:latest
+     image: mangoszero-realmd:latest
      ports:
-       - "3724:3724"
+       - "127.0.0.1:3724:3724"
      restart: always
      environment:
        LOGIN_DATABASE_INFO: db;3306;root;mangos;realmd
@@ -32,7 +32,7 @@ services:
        - mangos_mmaps:/etc/mangos/mmaps
        - mangos_dbc:/etc/mangos/dbc
      ports:
-       - "8085:8085"
+       - "127.0.0.1:8085:8085"
      restart: always
      environment:
        LOGIN_DATABASE_INFO: db;3306;root;mangos;realmd
