@@ -19,7 +19,7 @@ ENV CHARACTER_DATABASE_INFO=127.0.0.1;3306;root;mangos;character1
 WORKDIR /etc/mangos/
 COPY --from=builder /server/bin .
 RUN apt-get update && \
-    apt-get install wget libmariadbclient-dev libmariadb3 libssl-dev -y && \
+    apt-get install wget libmariadbclient-dev libmariadbd19 libmariadb3 libssl-dev -y && \
     useradd -ms /bin/bash mangos && \
     wget --no-check-certificate https://raw.githubusercontent.com/StephenSorriaux/mangos-docker/master/launch_mangosd.sh && \
     chmod -R a+x . && \
