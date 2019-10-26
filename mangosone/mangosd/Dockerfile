@@ -20,6 +20,7 @@ WORKDIR /etc/mangos/
 COPY --from=builder /server/bin .
 RUN apt-get update && \
     apt-get install wget libmariadbclient-dev libmariadbd19 libmariadb3 libssl-dev -y && \
+    ln -s /usr/lib/x86_64-linux-gnu/libmariadbclient.so /usr/lib/x86_64-linux-gnu/libmariadbclient.so.18 && \
     useradd -ms /bin/bash mangos && \
     wget --no-check-certificate https://raw.githubusercontent.com/StephenSorriaux/mangos-docker/master/launch_mangosd.sh && \
     chmod -R a+x . && \

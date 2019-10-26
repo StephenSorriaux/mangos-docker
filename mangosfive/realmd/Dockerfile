@@ -19,8 +19,11 @@ EXPOSE 3724
 ENV LOGIN_DATABASE_INFO=127.0.0.1;3306;root;mangos;realmd
 WORKDIR /etc/mangos/
 COPY --from=builder /server/bin/ .
+
+# TODO: avoid symlink?
 RUN apt-get update && \
     apt-get install wget libmariadbclient-dev libmariadbd19 libmariadb3 libssl-dev -y && \
+    ln -s /usr/lib/x86_64-linux-gnu/libmariadbclient.so /usr/lib/x86_64-linux-gnu/libmariadbclient.so.18 && \
     useradd -ms /bin/bash realm && \
     wget https://raw.githubusercontent.com/StephenSorriaux/mangos-docker/master/launch_realmd.sh && \
     chmod -R a+x . && \
