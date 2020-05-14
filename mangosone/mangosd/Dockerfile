@@ -9,7 +9,7 @@ RUN apt-get update -qq && \
     sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr && \
     git clone https://github.com/mangosone/server.git -b ${MANGOS_SERVER_VERSION} --recursive && \
     cd server && \
-    cmake . -DBUILD_REALMD=No -DBUILD_TOOLS=No -DCONF_DIR=conf/ && \
+    cmake . -DBUILD_REALMD=No -DBUILD_TOOLS=No -DCONF_INSTALL_DIR=/server/install/etc && \
     make ${THREAD_COUNT} && \
     make install ${THREAD_COUNT}
 
@@ -20,7 +20,8 @@ ENV LOGIN_DATABASE_INFO=127.0.0.1;3306;root;mangos;realmd
 ENV WORLD_DATABASE_INFO=127.0.0.1;3306;root;mangos;mangos1
 ENV CHARACTER_DATABASE_INFO=127.0.0.1;3306;root;mangos;character1
 WORKDIR /etc/mangos/
-COPY --from=builder /server/bin .
+COPY --from=builder /server/install/bin ./bin
+COPY --from=builder /server/install/etc ./conf
 RUN apt-get update && \
     apt-get install wget libmariadbclient-dev libmariadbd19 libmariadb3 libssl-dev -y && \
     ln -s /usr/lib/x86_64-linux-gnu/libmariadbclient.so /usr/lib/x86_64-linux-gnu/libmariadbclient.so.18 && \
@@ -31,6 +32,7 @@ RUN apt-get update && \
     sed -i 's/^LoginDatabaseInfo            =.*$/LoginDatabaseInfo            = LOGIN_DATABASE_INFO/' conf/mangosd.conf && \
     sed -i 's/^WorldDatabaseInfo            =.*$/WorldDatabaseInfo            = WORLD_DATABASE_INFO/' conf/mangosd.conf && \
     sed -i 's/^CharacterDatabaseInfo        =.*$/CharacterDatabaseInfo        = CHARACTER_DATABASE_INFO/' conf/mangosd.conf && \
+    sed -i 's/\/server\/install\/etc/\/etc\/mangos/' conf/mangosd.conf && \
     chown -R mangos:mangos . && \
     rm -rf /var/lib/apt/lists/*
 USER mangos

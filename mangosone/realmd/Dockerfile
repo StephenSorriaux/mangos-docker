@@ -9,7 +9,7 @@ RUN apt-get update -qq && \
     sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr && \
     git clone https://github.com/mangosone/server.git -b ${MANGOS_SERVER_VERSION} --recursive && \
     cd server && \
-    cmake . -DBUILD_MANGOSD=No -DBUILD_TOOLS=No -DCONF_DIR=conf/ && \
+    cmake . -DBUILD_MANGOSD=No -DBUILD_TOOLS=No -DCONF_INSTALL_DIR=/server/install/etc && \
     make ${THREAD_COUNT} && \
     make install ${THREAD_COUNT}
 
@@ -18,7 +18,8 @@ MAINTAINER Stephen SORRIAUX <stephen.sorriaux@gmail.com>
 EXPOSE 3724
 ENV LOGIN_DATABASE_INFO=127.0.0.1;3306;root;mangos;realmd
 WORKDIR /etc/mangos/
-COPY --from=builder /server/bin/ .
+COPY --from=builder /server/install/bin ./bin
+COPY --from=builder /server/install/etc ./conf
 RUN apt-get update && \
     apt-get install wget libmariadbclient-dev libmariadbd19 libmariadb3 libssl-dev -y && \
     ln -s /usr/lib/x86_64-linux-gnu/libmariadbclient.so /usr/lib/x86_64-linux-gnu/libmariadbclient.so.18 && \
