@@ -1,4 +1,4 @@
-FROM gcc:7.3.0 as builder
+FROM gcc:8.4.0 as builder
 ARG MANGOS_SERVER_VERSION=master
 ARG THREAD_COUNT="-j4"
 
