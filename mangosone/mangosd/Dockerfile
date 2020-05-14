@@ -1,9 +1,12 @@
-FROM gcc:8.4.0 as builder
+FROM gcc:7.3.0 as builder
 ARG MANGOS_SERVER_VERSION=master
 ARG THREAD_COUNT="-j4"
+ARG CMAKE_VERSION="3.14.5"
 
 RUN apt-get update -qq && \
-    apt-get install openssl libssl-dev cmake -y && \
+    apt-get install openssl libssl-dev -y && \
+    wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh && \
+    sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --skip-license --prefix=/usr && \
     git clone https://github.com/mangosone/server.git -b ${MANGOS_SERVER_VERSION} --recursive && \
     cd server && \
     cmake . -DBUILD_REALMD=No -DBUILD_TOOLS=No -DCONF_DIR=conf/ && \
