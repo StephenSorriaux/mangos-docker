@@ -32,6 +32,7 @@ RUN apt-get update && \
     sed -i 's/^LoginDatabaseInfo            =.*$/LoginDatabaseInfo            = LOGIN_DATABASE_INFO/' conf/mangosd.conf && \
     sed -i 's/^WorldDatabaseInfo            =.*$/WorldDatabaseInfo            = WORLD_DATABASE_INFO/' conf/mangosd.conf && \
     sed -i 's/^CharacterDatabaseInfo        =.*$/CharacterDatabaseInfo        = CHARACTER_DATABASE_INFO/' conf/mangosd.conf && \
+    sed -i 's/\/server\/install\/etc/\/etc\/mangos/' conf/mangosd.conf && \
     chown -R mangos:mangos . && \
     rm -rf /var/lib/apt/lists/*
 USER mangos
