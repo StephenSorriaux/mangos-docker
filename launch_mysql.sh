@@ -212,7 +212,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
     done
     echo "WORLD DATABASE CREATED."
     echo "CHARACTER DATABASE CREATION..."
-    "${mysql[@]}" < /database/Character/Setup/mangosdCreateDB.sql
+    "${mysql[@]}" < /database/Character/Setup/characterCreateDB.sql
     "${mysql[@]}"  -D${MANGOS_CHARACTER_DB} < /database/Character/Setup/characterLoadDB.sql
 		echo "APPLYING UPDATES..."
 		for f in /database/Character/Updates/${MANGOS_DB_RELEASE}/*.sql; do
