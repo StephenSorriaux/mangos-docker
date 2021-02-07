@@ -212,6 +212,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
     done
     echo "WORLD DATABASE CREATED."
     echo "CHARACTER DATABASE CREATION..."
+    "${mysql[@]}" < /database/Character/Setup/mangosdCreateDB.sql
     "${mysql[@]}"  -D${MANGOS_CHARACTER_DB} < /database/Character/Setup/characterLoadDB.sql
 		echo "APPLYING UPDATES..."
 		for f in /database/Character/Updates/${MANGOS_DB_RELEASE}/*.sql; do
@@ -219,14 +220,19 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
     done
     echo "CHARACTER DATABASE CREATED."
     echo "REALM DATABASE CREATION..."
+	"${mysql[@]}" <<-EOSQL
+		CREATE DATABASE `realmd` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+		GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, LOCK TABLES ON `realmd`.* TO 'mangos'@'%';
+		FLUSH PRIVILEGES;
+	EOSQL
     "${mysql[@]}" -Drealmd < /database/Realm/Setup/realmdLoadDB.sql
 		echo "APPLYING UPDATES..."
 		for f in /database/Realm/Updates/${MANGOS_DB_RELEASE}/*.sql; do
       echo "$0: running $f"; "${mysql[@]}" -Drealmd < "$f";
     done
-		"${mysql[@]}" -Drealmd <<-EOSQL
-			INSERT INTO realmlist (name,realmbuilds) VALUES ('${MANGOS_DATABASE_REALM_NAME}','12340') ;
-		EOSQL
+	"${mysql[@]}" -Drealmd <<-EOSQL
+		INSERT INTO realmlist (name,realmbuilds) VALUES ('${MANGOS_DATABASE_REALM_NAME}','12340') ;
+	EOSQL
     echo "REALM DATABASE CREATED."
 
 		for f in /docker-entrypoint-initdb.d/*; do
