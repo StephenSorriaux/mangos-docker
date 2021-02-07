@@ -207,7 +207,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
       echo "$0: running $f"; "${mysql[@]}" -D${MANGOS_WORLD_DB} < "$f";
     done
 		echo "APPLYING UPDATES..."
-		for f in /database/World/Updates/${MANGOS_DB_RELEASE}/*.sql; do
+		for f in /database/World/Updates/*/*.sql; do
       echo "$0: running $f"; "${mysql[@]}" -D${MANGOS_WORLD_DB} < "$f";
     done
     echo "WORLD DATABASE CREATED."
@@ -215,7 +215,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
     "${mysql[@]}" < /database/Character/Setup/characterCreateDB.sql
     "${mysql[@]}"  -D${MANGOS_CHARACTER_DB} < /database/Character/Setup/characterLoadDB.sql
 		echo "APPLYING UPDATES..."
-		for f in /database/Character/Updates/${MANGOS_DB_RELEASE}/*.sql; do
+		for f in /database/Character/Updates/*/*.sql; do
       echo "$0: running $f"; "${mysql[@]}" -D${MANGOS_CHARACTER_DB} < "$f";
     done
     echo "CHARACTER DATABASE CREATED."
@@ -226,9 +226,9 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		FLUSH PRIVILEGES;
 	EOSQL
     "${mysql[@]}" -Drealmd < /database/Realm/Setup/realmdLoadDB.sql
-		echo "APPLYING UPDATES..."
-		for f in /database/Realm/Updates/${MANGOS_DB_RELEASE}/*.sql; do
-      echo "$0: running $f"; "${mysql[@]}" -Drealmd < "$f";
+    echo "APPLYING UPDATES..."
+    for f in /database/Realm/Updates/*/*.sql; do
+        echo "$0: running $f"; "${mysql[@]}" -Drealmd < "$f";
     done
 	"${mysql[@]}" -Drealmd <<-EOSQL
 		INSERT INTO realmlist (name,realmbuilds) VALUES ('${MANGOS_DATABASE_REALM_NAME}','12340') ;
