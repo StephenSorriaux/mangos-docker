@@ -7,6 +7,8 @@ ARG MANGOS_DATABASE_VERSION=master
 ENV MANGOS_DATABASE_REALM_NAME=MyAwesomeWowServer
 ENV MANGOS_SERVER_VERSION=1
 ENV MANGOS_DB_RELEASE=Rel21
+ENV MYSQL_USER=mangos
+ENV MYSQL_PASSWORD=mangos
 
 RUN apt-get update && \
     apt-get install git wget -y && \
