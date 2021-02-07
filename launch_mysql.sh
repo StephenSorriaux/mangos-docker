@@ -221,8 +221,8 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
     echo "CHARACTER DATABASE CREATED."
     echo "REALM DATABASE CREATION..."
 	"${mysql[@]}" <<-EOSQL
-		CREATE DATABASE `realmd` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
-		GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, LOCK TABLES ON `realmd`.* TO 'mangos'@'%';
+		CREATE DATABASE realmd DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+		GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, LOCK TABLES ON \`realmd\`.* TO 'mangos'@'%';
 		FLUSH PRIVILEGES;
 	EOSQL
     "${mysql[@]}" -Drealmd < /database/Realm/Setup/realmdLoadDB.sql
