@@ -46,7 +46,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 15
           timeoutSeconds: 5
-          failureThreshold: 20
+          failureThreshold: 30
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -78,8 +78,8 @@ type: Opaque
 data:
   MYSQL_ROOT_PASSWORD: bWFuZ29z
   LOGIN_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7cmVhbG1k
-  WORLD_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7bWFuZ29z
-  CHARACTER_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7Y2hhcmFjdGVycw==
+  WORLD_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7bWFuZ29zMg==
+  CHARACTER_DATABASE_INFO: bWFuZ29zdHdvLW15c3FsOzMzMDY7cm9vdDttYW5nb3M7Y2hhcmFjdGVyMg==
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -100,6 +100,8 @@ spec:
       containers:
       - name: mangostwo-server
         image: ssorriaux/mangostwo-server:latest
+        stdin: true
+        tty: true
         env:
         - name: LOGIN_DATABASE_INFO
           valueFrom:

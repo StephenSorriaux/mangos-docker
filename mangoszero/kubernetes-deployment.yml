@@ -46,7 +46,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 15
           timeoutSeconds: 5
-          failureThreshold: 20
+          failureThreshold: 30
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -100,6 +100,8 @@ spec:
       containers:
       - name: mangoszero-server
         image: ssorriaux/mangoszero-server:latest
+        stdin: true
+        tty: true
         env:
         - name: LOGIN_DATABASE_INFO
           valueFrom:

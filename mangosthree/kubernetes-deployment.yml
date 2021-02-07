@@ -46,7 +46,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 15
           timeoutSeconds: 5
-          failureThreshold: 20
+          failureThreshold: 30
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -78,8 +78,8 @@ type: Opaque
 data:
   MYSQL_ROOT_PASSWORD: bWFuZ29z
   LOGIN_DATABASE_INFO: bWFuZ29zdGhyZWUtbXlzcWw7MzMwNjtyb290O21hbmdvcztyZWFsbWQ=
-  WORLD_DATABASE_INFO: bWFuZ29zdGhyZWUtbXlzcWw7MzMwNjtyb290O21hbmdvczttYW5nb3M=
-  CHARACTER_DATABASE_INFO: bWFuZ29zdGhyZWUtbXlzcWw7MzMwNjtyb290O21hbmdvcztjaGFyYWN0ZXJz
+  WORLD_DATABASE_INFO: bWFuZ29zdGhyZWUtbXlzcWw7MzMwNjtyb290O21hbmdvczttYW5nb3Mz
+  CHARACTER_DATABASE_INFO: bWFuZ29zdGhyZWUtbXlzcWw7MzMwNjtyb290O21hbmdvcztjaGFyYWN0ZXIz
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -100,6 +100,8 @@ spec:
       containers:
       - name: mangosthree-server
         image: ssorriaux/mangosthree-server:latest
+        stdin: true
+        tty: true
         env:
         - name: LOGIN_DATABASE_INFO
           valueFrom:

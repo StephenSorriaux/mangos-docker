@@ -46,7 +46,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 15
           timeoutSeconds: 5
-          failureThreshold: 20
+          failureThreshold: 30
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -78,8 +78,8 @@ type: Opaque
 data:
   MYSQL_ROOT_PASSWORD: bWFuZ29z
   LOGIN_DATABASE_INFO: bWFuZ29zZm91ci1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO3JlYWxtZA==
-  WORLD_DATABASE_INFO: bWFuZ29zZm91ci1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO21hbmdvcw==
-  CHARACTER_DATABASE_INFO: bWFuZ29zZm91ci1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO2NoYXJhY3RlcnM=
+  WORLD_DATABASE_INFO: bWFuZ29zZm91ci1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO21hbmdvczQ=
+  CHARACTER_DATABASE_INFO: bWFuZ29zZm91ci1teXNxbDszMzA2O3Jvb3Q7bWFuZ29zO2NoYXJhY3RlcjQ=
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -100,6 +100,8 @@ spec:
       containers:
       - name: mangosfour-server
         image: ssorriaux/mangosfour-server:latest
+        stdin: true
+        tty: true
         env:
         - name: LOGIN_DATABASE_INFO
           valueFrom:
