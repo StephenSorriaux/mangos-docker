@@ -184,9 +184,15 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			echo >&2 '  You need to specify MANGOS_DB_RELEASE in order to initialize the database'
 			exit 1
 		fi
-		if [ "$MANGOS_SERVER_VERSION" -gt 1 ]; then
-			MANGOS_WORLD_DB=mangos
-			MANGOS_CHARACTER_DB=characters
+		if [ "$MANGOS_SERVER_VERSION" -eq 4 ]; then
+			MANGOS_WORLD_DB=mangos4
+			MANGOS_CHARACTER_DB=character4
+		elif [ "$MANGOS_SERVER_VERSION" -eq 3 ]; then
+			MANGOS_WORLD_DB=mangos3
+			MANGOS_CHARACTER_DB=character3
+		elif [ "$MANGOS_SERVER_VERSION" -eq 2 ]; then
+			MANGOS_WORLD_DB=mangos2
+			MANGOS_CHARACTER_DB=character2
 		elif [ "$MANGOS_SERVER_VERSION" -eq 1 ]; then
 			MANGOS_WORLD_DB=mangos1
 			MANGOS_CHARACTER_DB=character1
