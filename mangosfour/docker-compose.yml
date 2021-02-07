@@ -36,8 +36,8 @@ services:
      restart: always
      environment:
        LOGIN_DATABASE_INFO: db;3306;root;mangos;realmd
-       WORLD_DATABASE_INFO: db;3306;root;mangos;mangos
-       CHARACTER_DATABASE_INFO: db;3306;root;mangos;characters
+       WORLD_DATABASE_INFO: db;3306;root;mangos;mangos4
+       CHARACTER_DATABASE_INFO: db;3306;root;mangos;character4
 volumes:
     db_data:
     mangos_maps:
